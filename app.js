@@ -14,9 +14,22 @@ const io = new Server(server, {
   },
 });
 
+let OnlineUsers=[];
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
+  // if(!OnlineUsers.length>2){
+  //   OnlineUsers=[];
+  //   // socket
+  // io.emit("OnlineUsers",{OnlineUsers:OnlineUsers})
 
+  // }
+  if(!OnlineUsers.includes(socket.id)){
+    OnlineUsers.push(socket.id);
+  }
+
+  io.emit("OnlineUsers",{OnlineUsers:OnlineUsers})
+
+  
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
 
@@ -36,7 +49,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    console.log("User disconnected",socket.id);
+    // console.log("User disconnected",id);
+
+   OnlineUsers = OnlineUsers.filter((id) => id != socket.id);
+    io.emit("OnlineUsers",{OnlineUsers:OnlineUsers})
   });
 });
 
